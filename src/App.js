@@ -6,12 +6,14 @@ import { Formik } from "formik";
 function App() {
   const [alldata, setAlldata] = useState([]);
   const [loader, setLoader] = useState();
+  const [nextbtn, setNext] = useState(null);
+  const [spaceId, setSpaceId] = useState(null);
   return (
     <div className="App">
       <div className="form-main">
         <h1>Download HUB Docs</h1>
         <Formik
-          initialValues={{ id: "335016", from: "", to: "" }}
+          initialValues={{ id: "people-portal", from: "", to: "" }}
           validate={(values) => {
             const errors = {};
             if (!values.id) {
@@ -30,30 +32,57 @@ function App() {
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
-            setLoader("Loading data....");
+            setNext(false);
+            setAlldata([]);
+            setLoader("verifying  URL....");
             axios({
-              url: `https://jivetestingapi.herokuapp.com/getjivedata/${values.id}/${values.from}/${values.to}`, // download url
-              method: "get",
+              url: `https://jivetestingapi.herokuapp.com/getspaceid/${values.id}`,
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
               },
-            }).then((response) => {
-              setLoader("");
-              if (response.data?.error) {
-                setLoader(response.data?.error?.message);
-                return;
-              }
-              const tempArray = [];
-              response?.data?.list?.map((lister) => {
-                if (lister?.type?.toLowerCase() === "file") {
-                  tempArray.push(lister);
-                  // tempArray.push(lister?.binaryURL)
-                  FileSaver.saveAs(lister?.binaryURL, lister?.name);
+            })
+              .then((spaceId) => {
+                if (spaceId.data?.placeID) {
+                  setSpaceId(spaceId.data?.placeID)
+                  setLoader("your download will start soon, please wait....");
+                  axios({
+                    url: `https://jivetestingapi.herokuapp.com/getjivedata/${spaceId.data.placeID}/${values.from}/${values.to}`, // download url
+                    method: "get",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  })
+                    .then((response) => {
+                      setLoader("");
+                      if (response.data?.error) {
+                        setLoader(response.data?.error?.message);
+                        return;
+                      }
+                      if (response?.data?.links?.next) {
+                        setNext(true);
+                      }
+                      const tempArray = [];
+                      response?.data?.list?.map((lister) => {
+                        if (lister?.type?.toLowerCase() === "file") {
+                          tempArray.push(lister);
+                          // tempArray.push(lister?.binaryURL)
+                          FileSaver.saveAs(lister?.binaryURL, lister?.name);
+                        }
+                      });
+                      setAlldata(tempArray);
+                    })
+                    .catch((e) => {
+                      setLoader("something went wrong, try again");
+                    });
+                } else {
+                  setLoader("spaceid not found, try with another URL");
                 }
+              })
+              .catch((e) => {
+                setLoader("Invalid Url");
               });
-              setAlldata(tempArray);
-            });
           }}
         >
           {({
@@ -68,7 +97,7 @@ function App() {
           }) => (
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Enter space ID</label>
+                <label>Enter URL</label>
                 <input
                   type="text"
                   name="id"
@@ -78,6 +107,7 @@ function App() {
                 />
                 {errors.id && touched.id && errors.id}
               </div>
+
               <div className="form-group">
                 <label>from</label>
                 <input
@@ -100,9 +130,57 @@ function App() {
                 />
                 {errors.to && touched.to && errors.to}
               </div>
-              <button type="submit" disabled={isSubmitting}>
-                Download
-              </button>
+              <div classNAme="dual">
+                <button type="submit">Download</button>
+                &nbsp;
+                {!!nextbtn && (
+                  <button
+                    type="submit"
+                    onClick={() => {
+                      setNext(false);
+                      setAlldata([])
+                      setLoader(
+                        "your download will start soon, please wait...."
+                      );
+                      axios({
+                        url: `https://jivetestingapi.herokuapp.com/getjivedata/${spaceId}/${values.to + values.from}/${values.to - values.from}`, // download url
+                        method: "get",
+                        headers: {
+                          Accept: "application/json",
+                          "Content-Type": "application/json",
+                        },
+                      })
+                        .then((response) => {
+                          setLoader("");
+                          if (response.data?.error) {
+                            setLoader(response.data?.error?.message);
+                            return;
+                          }
+                          if (response?.data?.links?.next) {
+                            setNext(true);
+                          }
+                          const tempArray = [];
+                          response?.data?.list?.map((lister) => {
+                            if (lister?.type?.toLowerCase() === "file") {
+                              tempArray.push(lister);
+                              // tempArray.push(lister?.binaryURL)
+                              FileSaver.saveAs(lister?.binaryURL, lister?.name);
+                            }
+                          });
+                          setAlldata(tempArray);
+                        })
+                        .catch((e) => {
+                          setLoader("something went wrong, try again");
+                        })
+                        .catch((e) => {
+                          setLoader("Invalid Url");
+                        });
+                    }}
+                  >
+                    Download next {(values.to - values.from) +1} items
+                  </button>
+                )}
+              </div>
             </form>
           )}
         </Formik>
@@ -114,15 +192,13 @@ function App() {
             <thead>
               <th>Name</th>
               <th>Size</th>
-              <th>URL</th>
             </thead>
             <tbody>
               {alldata?.map((value) => {
                 return (
                   <tr>
                     <td>{value.name}</td>
-                    <td>{value.size}</td>
-                    <td>{value.binaryURL}</td>
+                    <td>{(value.size / 1024 / 1024).toFixed(2)} MB</td>
                   </tr>
                 );
               })}
