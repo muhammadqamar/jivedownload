@@ -65,3 +65,12 @@ table {
     overflow-y: auto;
     display: block;
 }
+
+.chekcbox label {
+  margin: 0px 10px;
+}
+
+
+.chekcbox label input {
+  margin-right:5px
+}
