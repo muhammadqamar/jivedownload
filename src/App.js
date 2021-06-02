@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import FileSaver from "file-saver";
-import {Tabs, Tab , Alert} from 'react-bootstrap'
+import { Tabs, Tab, Alert } from "react-bootstrap";
 import "./App.css";
 import { Formik, Field, Form } from "formik";
 function App() {
@@ -10,10 +10,81 @@ function App() {
   const [loader, setLoader] = useState();
   const [nextbtn, setNext] = useState(null);
   const [spaceId, setSpaceId] = useState(null);
+  const timer = ms => new Promise(res => setTimeout(res, ms))
+  const tempArray = [];
+  const onSubmitMain = (url,values) => {
+    axios({
+      url: `https://jivetestingapi.herokuapp.com/getjivedata1?url=${encodeURIComponent(url)}`,
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      setLoader("");
+      if (response.data?.error) {
+        setLoader(response.data?.error?.message);
+        return;
+      }
+
+      
+     
+      const lister = response?.data?.list
+      async function load () {
+    //  response?.data?.list?.map(async function(lister)
+        for (var i = 0; i < response?.data?.list.length; i++) {
+        if (values.checked.includes(lister[i]?.type?.toLowerCase())) {
+          // tempArray.push(lister?.binaryURL)
+          if (lister[i]?.type?.toLowerCase() === "video") {
+            if (lister.playerBaseURL) {
+              tempArray.push(lister[i]);
+              const link = document.createElement("a");
+              link.href = lister[i].playerBaseURL;
+              link.target = "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+          } else if (lister[i]?.type?.toLowerCase() === "file") {
+            tempArray.push(lister[i]);
+            //FileSaver.saveAs(lister?.binaryURL, lister?.name);
+          } else if (lister[i]?.type?.toLowerCase() === "post") {
+            tempArray.push(lister[i]);
+            const link = document.createElement("a");
+            link.href = lister[i]?.permalink + ".pdf";
+            link.target = "_blank";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log("check")
+          } else if (lister[i]?.type?.toLowerCase() === "document") {
+            tempArray.push(lister[i]);
+          }
+
+          console.log(tempArray);
+        }
+        if (i === response?.data?.list.length-1 ) {
+          setAlldata(tempArray);
+          
+        }
+        await timer(1000);
+      };
+    }
+
+    load();
+
+      
+
+      if (response?.data?.links?.next) {
+        onSubmitMain(response?.data?.links?.next,values)
+      }
+    });
+  };
   return (
     <div className="App">
       <div className="form-main">
-        <br/><br/>
+        <br />
+        <br />
         <h3>Document Downloader (PDF, Docx, Blogs (PDFs))</h3>
         <Formik
           initialValues={{
@@ -46,7 +117,9 @@ function App() {
             // const cleanurl = values.id.site.replace(/\/$/, "");
             // alert(cleanurl)
             axios({
-              url: `https://jivetestingapi.herokuapp.com/getspaceid/${values.id.split('/')[values.id.split('/').length-1]}`,
+              url: `https://jivetestingapi.herokuapp.com/getspaceid/${
+                values.id.split("/")[values.id.split("/").length - 1]
+              }`,
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
@@ -56,63 +129,9 @@ function App() {
                 if (spaceId.data?.placeID) {
                   setSpaceId(spaceId.data?.placeID);
                   setLoader("your download will start soon, please wait....");
-                  axios({
-                    url: `https://jivetestingapi.herokuapp.com/getjivedata/${spaceId.data.placeID}/${values.from}/${values.to}`, // download url
-                    method: "get",
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                    },
-                  }).then((response) => {
-                    setLoader("");
-                    if (response.data?.error) {
-                      setLoader(response.data?.error?.message);
-                      return;
-                    }
-                    if (response?.data?.links?.next) {
-                      setNext(true);
-                    }
-                    const tempArray = [];
-                    response?.data?.list?.map((lister) => {
-                      if (
-                        values.checked.includes(lister?.type?.toLowerCase())
-                      ) {
-                        // tempArray.push(lister?.binaryURL)
-                        if (lister?.type?.toLowerCase() === "video") {
-                          if (lister.playerBaseURL) {
-                            tempArray.push(lister);
-                            const link = document.createElement("a");
-                            link.href = lister.playerBaseURL;
-                            link.target="_blank"
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                          }
-                        } else if (lister?.type?.toLowerCase() === "file") {
-                          tempArray.push(lister);
-                          FileSaver.saveAs(lister?.binaryURL, lister?.name);
-                        } else if (lister?.type?.toLowerCase() === "post") {
-                          tempArray.push(lister);
-                          const link = document.createElement("a");
-                          link.href = lister?.permalink+".pdf";
-                          link.target="_blank"
-                          document.body.appendChild(link);
-                          link.click();
-                          document.body.removeChild(link);
-              
-                        }else if (lister?.type?.toLowerCase() === "document") {
-                          tempArray.push(lister);
-                        }
-
-                        console.log(tempArray);
-                      }
-                    });
-
-                    setAlldata(tempArray);
-                  });
-                  // .catch((e) => {
-                  //   setLoader("something went wrong, try again");
-                  // });
+                  onSubmitMain(
+                    `https://thehub.spglobal.com/api/core/v3/places/${spaceId.data?.placeID}/contents?count=100&startIndex=0&abridged=false&includeBlogs=true`,values
+                  );
                 } else {
                   setLoader("spaceid not found, try with another URL");
                 }
@@ -144,9 +163,9 @@ function App() {
                 />
                 {errors.id && touched.id && errors.id}
               </div>
+              {/* <div className="form-group">
+                <label>From (min 1):</label>
 
-              <div className="form-group">
-                <label>To (max 50):</label>
                 <input
                   type="number"
                   name="from"
@@ -156,9 +175,8 @@ function App() {
                 />
                 {errors.from && touched.from && errors.from}
               </div>
-              
               <div className="form-group">
-                <label>From (min 1):</label>
+                <label>To (max 50):</label>
                 <input
                   type="number"
                   name="to"
@@ -168,8 +186,13 @@ function App() {
                 />
                 {errors.to && touched.to && errors.to}
               </div>
-              You can only download 50 documents at one time<br /><br />
-              <div role="group" className="chekcbox" aria-labelledby="checkbox-group">
+              You can only download 50 documents at one time */}
+             
+              <div
+                role="group"
+                className="chekcbox"
+                aria-labelledby="checkbox-group"
+              >
                 <label>
                   <Field type="checkbox" name="checked" value="file" />
                   pdf
@@ -187,7 +210,6 @@ function App() {
                   blogs
                 </label>
               </div>
-
               <div classNAme="dual">
                 <button type="submit">Download</button>
                 {/* &nbsp;
@@ -248,102 +270,101 @@ function App() {
 
       <div className="avialable">
         {alldata?.length > 0 ? (
+          <Tabs defaultActiveKey="BLOGS" id="uncontrolled-tab-example">
+            <Tab eventKey="PDF" title="PDF">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Publish Date</th>
+                </thead>
+                <tbody>
+                  {alldata?.map((value) => {
+                    return (
+                      value.type === "pdf" && (
+                        <tr>
+                          <td>{value.name}</td>
+                          <td>{(value.size / 1024 / 1024).toFixed(2)} MB</td>
+                          <td>{value.published}</td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Tab>
+            <Tab eventKey="DOCUMENTS" title="DOCUMENTS">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Publish Date</th>
+                </thead>
+                <tbody>
+                  {alldata?.map((value) => {
+                    return (
+                      value.type === "document" && (
+                        <tr>
+                          <td>{value.subject}</td>
+                          <td></td>
+                          <td>{value.published}</td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Tab>
+            <Tab eventKey="VIDEO" title="VIDEO">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Publish Date</th>
+                </thead>
+                <tbody>
+                  {alldata?.map((value) => {
+                    return (
+                      value.type === "video" && (
+                        <tr>
+                          <td>{value.subject}</td>
 
-           
-      <Tabs defaultActiveKey="BLOGS" id="uncontrolled-tab-example">
-      <Tab eventKey="PDF" title="PDF">
-      <table>
-            <thead>
-            <th>Name</th>
-              <th>Size</th>
-              <th>Publish Date</th>
-            </thead>
-            <tbody>
-              {alldata?.map((value) => {
-                return (
-                  value.type === 'pdf' && (
-                  <tr>
-                    <td>{value.name}</td>
-                    <td>{(value.size / 1024 / 1024).toFixed(2)} MB</td>
-                    <td>{value.published}</td>
-                  </tr>
-                  )
-                );
-              })}
-            </tbody>
-          </table>
-      </Tab>
-      <Tab eventKey="DOCUMENTS" title="DOCUMENTS">
-      <table>
-            <thead>
-              <th>Name</th>
-              <th>Size</th>
-              <th>Publish Date</th>
-            </thead>
-            <tbody>
-              {alldata?.map((value) => {
-                return (
-                  value.type === 'document' && (
-                  <tr>
-                    <td>{value.subject}</td>
-                    <td></td>
-                    <td>{value.published}</td>
-                  </tr>
-                ));
-              })}
-            </tbody>
-          </table>
-      </Tab>
-      <Tab eventKey="VIDEO" title="VIDEO" >
-      <table>
-            <thead>
-            <th>Name</th>
-              <th>Size</th>
-              <th>Publish Date</th>
-            </thead>
-            <tbody>
-              {alldata?.map((value) => {
-               return  value.type === 'video' && (
-                  <tr>
-                    <td>{value.subject}</td>
-                    
-                    <td></td>
-                    <td>{value.published}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-      </Tab>
-      <Tab eventKey="BLOGS" title="BLOGS" >
-      <table>
-            <thead>
-            <th>Name</th>
-              <th>Size</th>
-              <th>Publish Date</th>
-            </thead>
-            <tbody>
-              {alldata?.map((value) => {
-              return   value.type === 'post' && (
-                  <tr>
-                    <td>{value.subject}</td>
-                    <td></td>
-                    <td>{value.publishDate} </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-      </Tab>
-    </Tabs>
-      
+                          <td></td>
+                          <td>{value.published}</td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Tab>
+            <Tab eventKey="BLOGS" title="BLOGS">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Publish Date</th>
+                </thead>
+                <tbody>
+                  {alldata?.map((value) => {
+                    return (
+                      value.type === "post" && (
+                        <tr>
+                          <td>{value.subject}</td>
+                          <td></td>
+                          <td>{value.publishDate} </td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Tab>
+          </Tabs>
         ) : (
           loader && <Alert variant="primary">{loader}</Alert>
         )}
       </div>
- 
-
- 
     </div>
   );
 }
