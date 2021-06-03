@@ -92,10 +92,10 @@ function App() {
       <div className="form-main">
         <br />
         <br />
-        <h3>Document Downloader (PDF, Docx, Blogs (PDFs))</h3>
+        <h2 class="title">Document Downloader</h2>
         <Formik
           initialValues={{
-            id: "https://thehub.spglobal.com/community/sp_ratings",
+            id: "https://thehub.spglobal.com/community/people-portal",
             from: 1,
             to: 20,
             checked: ["document", "file", "video", "post"],
@@ -160,13 +160,14 @@ function App() {
           }) => (
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Enter space URL:</label>
+                <label class="label-url">Enter a space URL:</label>
                 <input
                   type="text"
                   name="id"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.id}
+				  value={values.id}
+				  //placeholder={values.id} // Aamir changed value to placeholder
                 />
                 {errors.id && touched.id && errors.id}
               </div>
@@ -202,19 +203,19 @@ function App() {
               >
                 <label>
                   <Field type="checkbox" name="checked" value="file" />
-                  pdf
+                  PDF
                 </label>
                 <label>
                   <Field type="checkbox" name="checked" value="document" />
-                  doc
+                  Documents
                 </label>
                 <label>
                   <Field type="checkbox" name="checked" value="video" />
-                  video
+                  Videos
                 </label>
                 <label>
                   <Field type="checkbox" name="checked" value="post" />
-                  blogs
+                  Blog posts
                 </label>
               </div>
               <div classNAme="dual">
