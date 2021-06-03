@@ -71,6 +71,7 @@ function App() {
         }
         if (i === response?.data?.list.length-1 ) {
           setAlldata(tempArray);
+          setLoader("Love you aamir bhai");
           
         }
         await timer(1000);
