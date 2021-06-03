@@ -56,9 +56,15 @@ function App() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            console.log("check")
+         
           } else if (lister[i]?.type?.toLowerCase() === "document") {
             tempArray.push(lister[i]);
+            const link = document.createElement("a");
+            link.href = lister[i]?.resources.html.ref + ".pdf";
+            link.target = "_blank";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
           }
 
           console.log(tempArray);
