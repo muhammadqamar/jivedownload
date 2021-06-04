@@ -90,9 +90,10 @@ function App() {
   return (
     <div className="App">
       <div className="form-main">
+		<a class="settings" href="#!">Goto Settings</a>
         <br />
         <br />
-        <h2 class="title">Document Downloader</h2>
+        <h2 class="title">The Hub Content Downloader</h2>
         <Formik
           initialValues={{
             id: "https://thehub.spglobal.com/community/people-portal",

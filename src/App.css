@@ -2,7 +2,7 @@ body {
 	background-color: #F3F4F8;
 }
 #root {
-	background-image: url(https://thehub.spglobal.com/resources/statics/461136/recentBlogBg.jpg);
+	background-image: url(images/bg.jpg);
     height: 100%;
     color: #1e1e1e;
     min-height: 730px;
@@ -29,6 +29,7 @@ h2.title {
    align-items: center;
    flex-direction: column;
    height: 100%;
+   position: relative;
 }
 
 .form-group {
@@ -80,6 +81,16 @@ button:hover {
  
   
 }
+
+a.settings {
+    background: #d6002a;
+    color: #fff;
+    padding: 7px ​15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
 tbody {
   height: 400px;
   overflow-y: auto;
@@ -88,6 +99,7 @@ tbody {
 .avialable td, .avialable th {
 	border: 1px solid #dedede;
     padding: 7px 10px;
+	width: 265px;
 }
 .tab-content {
     width: 100%;
