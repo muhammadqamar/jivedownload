@@ -31,6 +31,9 @@ h2.title {
    height: 100%;
    position: relative;
 }
+.hide {
+	display: none !important;
+}
 
 .form-group {
   display: flex;

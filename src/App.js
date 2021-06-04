@@ -99,7 +99,7 @@ function App() {
             id: "https://thehub.spglobal.com/community/people-portal",
             from: 1,
             to: 20,
-            checked: ["document", "file", "video", "post"],
+            checked: ["document", "file", "post"],
           }}
           validate={(values) => {
             const errors = {};
@@ -210,8 +210,8 @@ function App() {
                   <Field type="checkbox" name="checked" value="document" />
                   Documents
                 </label>
-                <label>
-                  <Field type="checkbox" name="checked" value="video" />
+                <label style={{ display: 'none'}}>
+                  <Field type="checkbox" name="checked" disabled value="video" />
                   Videos
                 </label>
                 <label>
