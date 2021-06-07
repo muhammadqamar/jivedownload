@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FileSaver from "file-saver";
-import { Tabs, Tab, Alert } from "react-bootstrap";
+import { Tabs, Modal, Tab, Alert } from "react-bootstrap";
 import "./App.css";
 import { Formik, Field, Form } from "formik";
 function App() {
@@ -10,11 +10,17 @@ function App() {
   const [loader, setLoader] = useState();
   const [nextbtn, setNext] = useState(null);
   const [spaceId, setSpaceId] = useState(null);
-  const timer = ms => new Promise(res => setTimeout(res, ms))
+  const [show, setShow] = useState(true);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const timer = (ms) => new Promise((res) => setTimeout(res, ms));
   const tempArray = [];
-  const onSubmitMain = (url,values) => {
+  const onSubmitMain = (url, values) => {
     axios({
-      url: `https://jivetestingapi.herokuapp.com/getjivedata1?url=${encodeURIComponent(url)}`,
+      url: `https://jivetestingapi.herokuapp.com/getjivedata1?url=${encodeURIComponent(
+        url
+      )}`,
       method: "get",
       headers: {
         Accept: "application/json",
@@ -27,70 +33,66 @@ function App() {
         return;
       }
 
-      
-     
-      const lister = response?.data?.list
-      async function load () {
-    //  response?.data?.list?.map(async function(lister)
+      const lister = response?.data?.list;
+      async function load() {
+        //  response?.data?.list?.map(async function(lister)
         for (var i = 0; i < response?.data?.list.length; i++) {
-        if (values.checked.includes(lister[i]?.type?.toLowerCase())) {
-          // tempArray.push(lister?.binaryURL)
-          if (lister[i]?.type?.toLowerCase() === "video") {
-            if (lister.playerBaseURL) {
+          if (values.checked.includes(lister[i]?.type?.toLowerCase())) {
+            // tempArray.push(lister?.binaryURL)
+            if (lister[i]?.type?.toLowerCase() === "video") {
+              if (lister.playerBaseURL) {
+                tempArray.push(lister[i]);
+                const link = document.createElement("a");
+                link.href = lister[i].playerBaseURL;
+                link.target = "_blank";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }
+            } else if (lister[i]?.type?.toLowerCase() === "file") {
+              tempArray.push(lister[i]);
+              //FileSaver.saveAs(lister?.binaryURL, lister?.name);
+            } else if (lister[i]?.type?.toLowerCase() === "post") {
               tempArray.push(lister[i]);
               const link = document.createElement("a");
-              link.href = lister[i].playerBaseURL;
+              link.href = lister[i]?.permalink + ".pdf";
+              link.target = "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            } else if (lister[i]?.type?.toLowerCase() === "document") {
+              tempArray.push(lister[i]);
+              const link = document.createElement("a");
+              link.href = lister[i]?.resources.html.ref + ".pdf";
               link.target = "_blank";
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
             }
-          } else if (lister[i]?.type?.toLowerCase() === "file") {
-            tempArray.push(lister[i]);
-            //FileSaver.saveAs(lister?.binaryURL, lister?.name);
-          } else if (lister[i]?.type?.toLowerCase() === "post") {
-            tempArray.push(lister[i]);
-            const link = document.createElement("a");
-            link.href = lister[i]?.permalink + ".pdf";
-            link.target = "_blank";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-         
-          } else if (lister[i]?.type?.toLowerCase() === "document") {
-            tempArray.push(lister[i]);
-            const link = document.createElement("a");
-            link.href = lister[i]?.resources.html.ref + ".pdf";
-            link.target = "_blank";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+
+            console.log(tempArray);
           }
-
-          console.log(tempArray);
+          if (i === response?.data?.list.length - 1) {
+            setAlldata(tempArray);
+            setLoader("Love you aamir bhai");
+          }
+          await timer(1000);
         }
-        if (i === response?.data?.list.length-1 ) {
-          setAlldata(tempArray);
-          setLoader("Love you aamir bhai");
-          
-        }
-        await timer(1000);
-      };
-    }
+      }
 
-    load();
-
-      
+      load();
 
       if (response?.data?.links?.next) {
-        onSubmitMain(response?.data?.links?.next,values)
+        onSubmitMain(response?.data?.links?.next, values);
       }
     });
   };
   return (
     <div className="App">
       <div className="form-main">
-		<a class="settings" href="#!">Goto Settings</a>
+        <a class="settings" href="#!" onClick={handleShow}>
+          Goto Settings
+        </a>
         <br />
         <br />
         <h2 class="title">The Hub Content Downloader</h2>
@@ -138,7 +140,8 @@ function App() {
                   setSpaceId(spaceId.data?.placeID);
                   setLoader("your download will start soon, please wait....");
                   onSubmitMain(
-                    `https://thehub.spglobal.com/api/core/v3/places/${spaceId.data?.placeID}/contents?count=100&startIndex=0&abridged=false&includeBlogs=true`,values
+                    `https://thehub.spglobal.com/api/core/v3/places/${spaceId.data?.placeID}/contents?count=100&startIndex=0&abridged=false&includeBlogs=true`,
+                    values
                   );
                 } else {
                   setLoader("spaceid not found, try with another URL");
@@ -167,8 +170,8 @@ function App() {
                   name="id"
                   onChange={handleChange}
                   onBlur={handleBlur}
-				  value={values.id}
-				  //placeholder={values.id} // Aamir changed value to placeholder
+                  value={values.id}
+                  //placeholder={values.id} // Aamir changed value to placeholder
                 />
                 {errors.id && touched.id && errors.id}
               </div>
@@ -196,7 +199,7 @@ function App() {
                 {errors.to && touched.to && errors.to}
               </div>
               You can only download 50 documents at one time */}
-             
+
               <div
                 role="group"
                 className="chekcbox"
@@ -210,8 +213,13 @@ function App() {
                   <Field type="checkbox" name="checked" value="document" />
                   Documents
                 </label>
-                <label style={{ display: 'none'}}>
-                  <Field type="checkbox" name="checked" disabled value="video" />
+                <label style={{ display: "none" }}>
+                  <Field
+                    type="checkbox"
+                    name="checked"
+                    disabled
+                    value="video"
+                  />
                   Videos
                 </label>
                 <label>
@@ -374,6 +382,40 @@ function App() {
           loader && <Alert variant="primary">{loader}</Alert>
         )}
       </div>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <strong> Tool GuideLine</strong>
+        </Modal.Header>
+
+        <Modal.Body>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+          <br />
+          <br />
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industry's standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
