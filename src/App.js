@@ -390,30 +390,22 @@ function App() {
         centered
       >
         <Modal.Header closeButton>
-          <strong> Tool GuideLine</strong>
+          <h2>Browser settings before you use</h2>
         </Modal.Header>
 
         <Modal.Body>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.
+		  <h4 className="red">Mandatory settings</h4><br/>
+          <h5>Step 01:</h5>
+		  <p>Some smart image screenshot here</p>
+		  <h5>Step 02:</h5>
+		  <p>Some smart image screenshot here</p>
           <br />
           <br />
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.
+		  <h4>Optional settings</h4><br/>
+          <h5>Step 01:</h5>
+		  <p>Some smart image screenshot here</p>
+		  <h5>Step 02:</h5>
+		  <p>Some smart image screenshot here</p>
         </Modal.Body>
       </Modal>
     </div>

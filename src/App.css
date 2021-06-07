@@ -69,9 +69,6 @@ button {
   margin-top: 20px;
   
 } 
-button:hover {
-    background-color: #ba182b;
-}
 .avialable {
   max-width: 800px;
   margin: 50px auto;
@@ -88,7 +85,10 @@ button:hover {
 a.settings {
     background: #d6002a;
     color: #fff;
-    padding: 7px ​15px;
+	padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
     position: absolute;
     right: 0;
     top: 0;
@@ -133,4 +133,10 @@ table {
 
 .nav {
     width: 100%;
+}
+button:hover {
+    background-color: transparent;
+}
+.red {
+	color: #d6002a;
 }
