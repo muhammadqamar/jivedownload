@@ -134,7 +134,11 @@ table {
 .nav {
     width: 100%;
 }
-button:hover {
+button:hover,
+.settings:hover {
+    background-color: #ba182b;
+}
+.modal-dialog button:hover {
     background-color: transparent;
 }
 .red {
