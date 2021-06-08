@@ -127,9 +127,7 @@ function App() {
             // const cleanurl = values.id.site.replace(/\/$/, "");
             // alert(cleanurl)
             axios({
-              url: `https://jivetestingapi.herokuapp.com/getspaceid/${
-                values.id.split("/")[values.id.split("/").length - 1]
-              }`,
+              url: `https://jivetestingapi.herokuapp.com/getspaceid?url=${values.id}`,
               headers: {
                 Accept: "application/json",
                 "Content-Type": "application/json",
