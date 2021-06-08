@@ -394,18 +394,84 @@ function App() {
         </Modal.Header>
 
         <Modal.Body>
-		  <h4 className="red">Mandatory settings</h4><br/>
-          <h5>Step 01:</h5>
-		  <p>Some smart image screenshot here</p>
-		  <h5>Step 02:</h5>
-		  <p>Some smart image screenshot here</p>
+          <h4 className="red">Mandatory settings</h4>
+          
+          <p>
+            By default , Broswer open pdf file in new tab instead of download,
+            We have to change Browser settings to download pdf. follow below
+            instructions to change settings.
+          </p>
+          <ol>
+            <li class="search-result">Open Google Chrome</li>
+            <li class="search-result">
+              Click on the&nbsp;<strong>Menu</strong> icon in the top-right
+              corner of the Window (it will be the button that looks like three
+              vertical dots)
+            </li>
+            <li class="search-result">
+              Click&nbsp;<strong>Settings</strong>
+            </li>
+            <li class="search-result">
+              Click on the <em>Privacy and security</em> section on the left
+            </li>
+            <li class="search-result">
+              Click <strong>Site Settings</strong>. Then{" "}
+              <strong>Additional Content Settings</strong>
+            </li>
+            <li class="search-result">
+              Scroll down and click the&nbsp;<strong>PDF documents</strong>{" "}
+              option
+            </li>
+            <li class="search-result">
+              Change the "Download PDF files instead of automatically opening
+              them in Chrome" option from the off position (grey) to the on
+              position (blue)
+            </li>
+            <li class="search-result">
+              Close the Settings tab and restart your browser
+            </li>
+          </ol>
+
           <br />
-          <br />
-		  <h4>Optional settings</h4><br/>
-          <h5>Step 01:</h5>
-		  <p>Some smart image screenshot here</p>
-		  <h5>Step 02:</h5>
-		  <p>Some smart image screenshot here</p>
+          <h4>Optional settings</h4>
+         
+          <p>
+            We will be downloading a lot of differnet documents, so it is recomnded
+            to change your default browser download path to some specfic path.
+            follow below steps to change download path.
+          </p>
+          <ol>
+            <li>On your computer, open Chrome.</li>
+            <li>
+              At the top right, click More{" "}
+              <img
+                src="//lh3.googleusercontent.com/oLoRPrHJd7m46sWijX6zBWnEnfslP62AxJSwt5Nj0bNbpaYHz2pyscExleiofsH2kQ=h36"
+                width="Auto"
+                height="18"
+                alt="More"
+                title="More"
+                data-mime-type="image/png"
+              />{" "}
+              <img
+                src="//lh3.googleusercontent.com/3_l97rr0GvhSP2XV5OoCkV2ZDTIisAOczrSdzNCBxhIKWrjXjHucxNwocghoUa39gw=w36-h36"
+                width="18"
+                height="18"
+                alt="and then"
+                title="and then"
+                data-mime-type="image/png"
+              />{" "}
+              <strong>Settings</strong>.
+            </li>
+            <li>
+              At the bottom, click <strong>Advanced</strong>.
+            </li>
+            <li data-outlined="false" class="">
+              Under the "Downloads" section, adjust your download settings.
+              To change the default download location, click{" "}
+                  <strong>Change</strong> and select where you'd like your files
+                  to be saved.
+            </li>
+          </ol>
         </Modal.Body>
       </Modal>
     </div>
