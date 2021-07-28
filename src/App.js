@@ -5,6 +5,7 @@ import FileSaver from "file-saver";
 import { Tabs, Modal, Tab, Alert } from "react-bootstrap";
 import "./App.css";
 import { Formik, Field, Form } from "formik";
+const queryString = require('query-string');
 function App() {
   const [alldata, setAlldata] = useState([]);
   const [loader, setLoader] = useState();
@@ -16,15 +17,16 @@ function App() {
   const handleShow = () => setShow(true);
   const timer = (ms) => new Promise((res) => setTimeout(res, ms));
   const tempArray = [];
-  const onSubmitMain = (url, values) => {
+  const onSubmitMain = (id,count,start, values) => {
     axios({
-      url: `https://jivetestingapi.herokuapp.com/getjivedata1?url=${encodeURIComponent(
-        url
-      )}`,
+      url: `https://f54saj9199.execute-api.us-east-1.amazonaws.com/getjivedata/${id}/${count}/${start}`,
       method: "get",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        'Content-Type': 'application/x-www-form-urlencoded' ,
+        Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
+        // "Content-Type": "application/json",
+        // 'Access-Control-Allow-Headers': "*",
+        // 'Access-Control-Allow-Origin': "*",
       },
     }).then((response) => {
       setLoader("");
@@ -74,7 +76,7 @@ function App() {
           }
           if (i === response?.data?.list.length - 1) {
             setAlldata(tempArray);
-            setLoader("Love you aamir bhai");
+            setLoader("");
           }
           await timer(1000);
         }
@@ -83,7 +85,9 @@ function App() {
       load();
 
       if (response?.data?.links?.next) {
-        onSubmitMain(response?.data?.links?.next, values);
+        const parsed = queryString.parse(response?.data?.links?.next);
+        console.log(parsed)
+        onSubmitMain(id,parsed.count,parsed.startIndex, values);
       }
     });
   };
@@ -126,11 +130,17 @@ function App() {
             setLoader("verifying  URL....");
             // const cleanurl = values.id.site.replace(/\/$/, "");
             // alert(cleanurl)
+            
             axios({
-              url: `https://jivetestingapi.herokuapp.com/getspaceid?url=${values.id}`,
+              url: `https://28i66pyfk4.execute-api.us-east-1.amazonaws.com/getspaceid/${values.id.split(".com/")[1].split("/")[0]}/${values.id.split(".com/")[1].split("/")[1]}`,
               headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
+           
+                'Content-Type': 'application/x-www-form-urlencoded' ,
+                Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
+                // 'Access-Control-Allow-Headers': "Content-Type",
+                // 'Access-Control-Allow-Origin': "*",
+                // 'Access-Control-Allow-Methods': "OPTIONS,GET",
+                
               },
             })
               .then((spaceId) => {
@@ -138,7 +148,7 @@ function App() {
                   setSpaceId(spaceId.data?.placeID);
                   setLoader("your download will start soon, please wait....");
                   onSubmitMain(
-                    `https://thehub.spglobal.com/api/core/v3/places/${spaceId.data?.placeID}/contents?count=100&startIndex=0&abridged=false&includeBlogs=true`,
+                    spaceId.data?.placeID,25,0,
                     values
                   );
                 } else {
