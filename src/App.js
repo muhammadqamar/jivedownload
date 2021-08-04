@@ -22,7 +22,7 @@ function App() {
       url: `https://f54saj9199.execute-api.us-east-1.amazonaws.com/getjivedata/${id}/${count}/${start}`,
       method: "get",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded' ,
+        // 'Content-Type': 'application/x-www-form-urlencoded' ,
         Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
         // "Content-Type": "application/json",
         // 'Access-Control-Allow-Headers': "*",
@@ -135,7 +135,6 @@ function App() {
               url: `https://28i66pyfk4.execute-api.us-east-1.amazonaws.com/getspaceid/${values.id.split(".com/")[1].split("/")[0]}/${values.id.split(".com/")[1].split("/")[1]}`,
               headers: {
            
-                'Content-Type': 'application/x-www-form-urlencoded' ,
                 Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
                 // 'Access-Control-Allow-Headers': "Content-Type",
                 // 'Access-Control-Allow-Origin': "*",
@@ -411,6 +410,9 @@ function App() {
           </p>
           <ol>
             <li class="search-result">Open Google Chrome</li>
+            <li>For Security Concerns, we have to add CORS extension. Open <a href="https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino?hl=en" target="_blank">CORS </a>
+             Link and activitate CORS extension before using the tool.
+            </li>
             <li class="search-result">
               Click on the&nbsp;<strong>Menu</strong> icon in the top-right
               corner of the Window (it will be the button that looks like three
