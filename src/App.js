@@ -132,15 +132,15 @@ function App() {
             // alert(cleanurl)
             
             axios({
-              url: `https://28i66pyfk4.execute-api.us-east-1.amazonaws.com/getspaceid/${values.id.split(".com/")[1].split("/")[0]}/${values.id.split(".com/")[1].split("/")[1]}`,
-              headers: {
+              url: `https://jivetestingapi.herokuapp.com/getspaceid/?url=${values.id}`,
+              // headers: {
            
-                Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
-                // 'Access-Control-Allow-Headers': "Content-Type",
-                // 'Access-Control-Allow-Origin': "*",
-                // 'Access-Control-Allow-Methods': "OPTIONS,GET",
+              //   Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
+              //   // 'Access-Control-Allow-Headers': "Content-Type",
+              //   // 'Access-Control-Allow-Origin': "*",
+              //   // 'Access-Control-Allow-Methods': "OPTIONS,GET",
                 
-              },
+              // },
             })
               .then((spaceId) => {
                 if (spaceId.data?.placeID) {
