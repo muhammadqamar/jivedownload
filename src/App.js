@@ -53,7 +53,12 @@ function App() {
               }
             } else if (lister[i]?.type?.toLowerCase() === "file") {
               tempArray.push(lister[i]);
-              //FileSaver.saveAs(lister?.binaryURL, lister?.name);
+              const link = document.createElement("a");
+              link.href = lister[i]?.binaryURL
+              link.target = "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
             } else if (lister[i]?.type?.toLowerCase() === "post") {
               tempArray.push(lister[i]);
               const link = document.createElement("a");
