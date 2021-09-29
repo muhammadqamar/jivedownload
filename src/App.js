@@ -54,7 +54,7 @@ function App() {
             } else if (lister[i]?.type?.toLowerCase() === "file") {
               tempArray.push(lister[i]);
               const link = document.createElement("a");
-              link.href = lister[i]?.binaryURL
+              link.href = lister[i]?.binaryURL;
               link.target = "_blank";
               document.body.appendChild(link);
               link.click();
@@ -76,7 +76,37 @@ function App() {
               link.click();
               document.body.removeChild(link);
             }
+            else if (lister[i]?.type?.toLowerCase() === "idea") {
+              tempArray.push(lister[i]);
+              const link = document.createElement("a");
+              link.href = lister[i]?.resources.html.ref + ".pdf";
+              link.target = "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+            else if (lister[i]?.type?.toLowerCase() === "discussion"  ) {
+              tempArray.push(lister[i]);
+              const link = document.createElement("a");
+              link.href = lister[i]?.resources.html.ref + ".pdf";
+              link.target = "_blank";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+            // else if (lister[i]?.type?.toLowerCase() === "discussion" && !lister[i].question ) {
+            //   tempArray.push(lister[i]);
+            //   const link = document.createElement("a");
+            //   link.href = lister[i]?.resources.html.ref + ".pdf";
+            //   link.target = "_blank";
+            //   document.body.appendChild(link);
+            //   link.click();
+            //   document.body.removeChild(link);
+            // }
 
+
+
+            
             console.log(tempArray);
           }
           if (i === response?.data?.list.length - 1) {
@@ -91,7 +121,7 @@ function App() {
 
       if (response?.data?.links?.next) {
         const parsed = queryString.parse(response?.data?.links?.next);
-        console.log(parsed)
+        
         onSubmitMain(id,parsed.count,parsed.startIndex, values);
       }
     });
@@ -110,7 +140,7 @@ function App() {
             id: "https://thehub.spglobal.com/community/people-portal",
             from: 1,
             to: 20,
-            checked: ["document", "file", "post"],
+            checked: ["document", "file", "post", "question", "idea", "discussion"],
           }}
           validate={(values) => {
             const errors = {};
@@ -133,19 +163,11 @@ function App() {
             setNext(false);
             setAlldata([]);
             setLoader("verifying  URL....");
-            // const cleanurl = values.id.site.replace(/\/$/, "");
-            // alert(cleanurl)
+           
             
             axios({
               url: `https://jivetestingapi.herokuapp.com/getspaceid/?url=${values.id}`,
-              // headers: {
-           
-              //   Authorization:"Basic cGVvcGxlX3BvcnRhbF9wb2xpY2llczpXZWxjb21lMjAyMA==",
-              //   // 'Access-Control-Allow-Headers': "Content-Type",
-              //   // 'Access-Control-Allow-Origin': "*",
-              //   // 'Access-Control-Allow-Methods': "OPTIONS,GET",
-                
-              // },
+             
             })
               .then((spaceId) => {
                 if (spaceId.data?.placeID) {
@@ -183,34 +205,11 @@ function App() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.id}
-                  //placeholder={values.id} // Aamir changed value to placeholder
+                
                 />
                 {errors.id && touched.id && errors.id}
               </div>
-              {/* <div className="form-group">
-                <label>From (min 1):</label>
-
-                <input
-                  type="number"
-                  name="from"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.from}
-                />
-                {errors.from && touched.from && errors.from}
-              </div>
-              <div className="form-group">
-                <label>To (max 50):</label>
-                <input
-                  type="number"
-                  name="to"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.to}
-                />
-                {errors.to && touched.to && errors.to}
-              </div>
-              You can only download 50 documents at one time */}
+          
 
               <div
                 role="group"
@@ -219,7 +218,7 @@ function App() {
               >
                 <label>
                   <Field type="checkbox" name="checked" value="file" />
-                  PDF
+                  Files
                 </label>
                 <label>
                   <Field type="checkbox" name="checked" value="document" />
@@ -236,61 +235,21 @@ function App() {
                 </label>
                 <label>
                   <Field type="checkbox" name="checked" value="post" />
-                  Blog posts
+                  Blogs
+                </label>
+                
+                <label>
+                  <Field type="checkbox" name="checked" value="discussion" />
+                  Discussions & Questions
+                </label>
+               
+                <label>
+                  <Field type="checkbox" name="checked" value="idea" />
+                  Ideas
                 </label>
               </div>
               <div classNAme="dual">
                 <button type="submit">Download</button>
-                {/* &nbsp;
-                {!!nextbtn && (
-                  <button
-                    type="submit"
-                    onClick={() => {
-                      setNext(false);
-                      setAlldata([]);
-                      setLoader(
-                        "your download will start soon, please wait...."
-                      );
-                      axios({
-                        url: `https://jivetestingapi.herokuapp.com/getjivedata/${spaceId}/${
-                          values.to + values.from
-                        }/${values.to - values.from}`, // download url
-                        method: "get",
-                        headers: {
-                          Accept: "application/json",
-                          "Content-Type": "application/json",
-                        },
-                      })
-                        .then((response) => {
-                          setLoader("");
-                          if (response.data?.error) {
-                            setLoader(response.data?.error?.message);
-                            return;
-                          }
-                          if (response?.data?.links?.next) {
-                            setNext(true);
-                          }
-                          const tempArray = [];
-                          response?.data?.list?.map((lister) => {
-                            if (lister?.type?.toLowerCase() === "file") {
-                              tempArray.push(lister);
-                              // tempArray.push(lister?.binaryURL)
-                              FileSaver.saveAs(lister?.binaryURL, lister?.name);
-                            }
-                          });
-                          setAlldata(tempArray);
-                        })
-                        .catch((e) => {
-                          setLoader("something went wrong, try again");
-                        })
-                        .catch((e) => {
-                          setLoader("Invalid Url");
-                        });
-                    }}
-                  >
-                    Download next {values.to - values.from + 1}
-                  </button>
-                )} */}
               </div>
             </form>
           )}
@@ -300,7 +259,7 @@ function App() {
       <div className="avialable">
         {alldata?.length > 0 ? (
           <Tabs defaultActiveKey="BLOGS" id="uncontrolled-tab-example">
-            <Tab eventKey="PDF" title="PDF">
+            <Tab eventKey="PDF" title="FILES">
               <table>
                 <thead>
                   <th>Name</th>
@@ -344,7 +303,7 @@ function App() {
                 </tbody>
               </table>
             </Tab>
-            <Tab eventKey="VIDEO" title="VIDEO">
+            <Tab eventKey="IDEAS" title="IDEAS">
               <table>
                 <thead>
                   <th>Name</th>
@@ -378,6 +337,28 @@ function App() {
                   {alldata?.map((value) => {
                     return (
                       value.type === "post" && (
+                        <tr>
+                          <td>{value.subject}</td>
+                          <td></td>
+                          <td>{value.publishDate} </td>
+                        </tr>
+                      )
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Tab>
+            <Tab eventKey="DISCUSSIONS" title="DISCUSSIONS & QUESTIONS">
+              <table>
+                <thead>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Publish Date</th>
+                </thead>
+                <tbody>
+                  {alldata?.map((value) => {
+                    return (
+                      value.type === "discussion" && (
                         <tr>
                           <td>{value.subject}</td>
                           <td></td>
