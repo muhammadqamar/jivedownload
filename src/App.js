@@ -36,9 +36,13 @@ function App() {
       }
 
       const lister = response?.data?.list;
+      const fromDate =  new Date(values.fromDate);
+      const ToDate =  new Date(values.toDate);
       async function load() {
         //  response?.data?.list?.map(async function(lister)
         for (var i = 0; i < response?.data?.list.length; i++) {
+          const publishedDate = new Date(lister[i].published)
+          if ((fromDate <= publishedDate) && (publishedDate  <= ToDate) ) {
           if (values.checked.includes(lister[i]?.type?.toLowerCase())) {
             // tempArray.push(lister?.binaryURL)
             if (lister[i]?.type?.toLowerCase() === "video") {
@@ -106,9 +110,9 @@ function App() {
 
 
 
-            
+           
             console.log(tempArray);
-          }
+          }}
           if (i === response?.data?.list.length - 1) {
             setAlldata(tempArray);
             setLoader("");
@@ -121,8 +125,8 @@ function App() {
 
       if (response?.data?.links?.next) {
         const parsed = queryString.parse(response?.data?.links?.next);
-        
-        onSubmitMain(id,parsed.count,parsed.startIndex, values);
+       
+      //onSubmitMain(id,parsed.count,parsed.startIndex, values);
       }
     });
   };
@@ -140,6 +144,8 @@ function App() {
             id: "https://thehub.spglobal.com/community/people-portal",
             from: 1,
             to: 20,
+            fromDate:'',
+            toDate:'',
             checked: ["document", "file", "post", "question", "idea", "discussion"],
           }}
           validate={(values) => {
@@ -150,6 +156,15 @@ function App() {
             if (!values.from) {
               errors.from = "Required";
             }
+
+            if (!values.fromDate) {
+              errors.fromDate = "From Date Required";
+            }
+
+            if (!values.toDate) {
+              errors.toDate = "To Date Required";
+            }
+
             if (!values.to) {
               errors.to = "Required";
             } else if (
@@ -163,8 +178,8 @@ function App() {
             setNext(false);
             setAlldata([]);
             setLoader("verifying  URL....");
+            console.log(values)
            
-            
             axios({
               url: `https://jivetestingapi.herokuapp.com/getspaceid/?url=${values.id}`,
              
@@ -205,11 +220,11 @@ function App() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.id}
-                
+               
                 />
                 {errors.id && touched.id && errors.id}
               </div>
-          
+         
 
               <div
                 role="group"
@@ -237,7 +252,7 @@ function App() {
                   <Field type="checkbox" name="checked" value="post" />
                   Blogs
                 </label>
-                
+               
                 <label>
                   <Field type="checkbox" name="checked" value="discussion" />
                   Discussions & Questions
@@ -248,6 +263,33 @@ function App() {
                   Ideas
                 </label>
               </div>
+              <div className="options">
+              <label>
+                 
+                  Filder data by Date
+                </label>
+                <br />
+                From: &nbsp; &nbsp;
+                <input
+                   type="date"
+                   name="fromDate"
+                   onChange={handleChange}
+                   onBlur={handleBlur}
+                   value={values.fromDate}
+                />
+                &nbsp;&nbsp;To&nbsp;&nbsp;
+                <input
+                   type="date"
+                   name="toDate"
+                   onChange={handleChange}
+                   onBlur={handleBlur}
+                   value={values.toDate}
+                />
+
+              </div>
+              {errors.fromDate && touched.fromDate && errors.fromDate}
+              <br />
+              {errors.toDate && touched.toDate && errors.toDate}
               <div classNAme="dual">
                 <button type="submit">Download</button>
               </div>
@@ -388,7 +430,7 @@ function App() {
 
         <Modal.Body>
           <h4 className="red">Mandatory settings</h4>
-          
+         
           <p>
             By default , Broswer open pdf file in new tab instead of download,
             We have to change Browser settings to download pdf. follow below
