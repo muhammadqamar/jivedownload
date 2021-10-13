@@ -17,6 +17,7 @@ function App() {
   const handleShow = () => setShow(true);
   const timer = (ms) => new Promise((res) => setTimeout(res, ms));
   const tempArray = [];
+  const currentDate =  new Date();
   const onSubmitMain = (id,count,start, values) => {
     axios({
       url: `https://f54saj9199.execute-api.us-east-1.amazonaws.com/getjivedata/${id}/${count}/${start}`,
@@ -42,7 +43,9 @@ function App() {
         //  response?.data?.list?.map(async function(lister)
         for (var i = 0; i < response?.data?.list.length; i++) {
           const publishedDate = new Date(lister[i].published)
-          if ((fromDate <= publishedDate) && (publishedDate  <= ToDate) ) {
+         
+          if ((fromDate <= publishedDate  <= ToDate) ) {
+         
           if (values.checked.includes(lister[i]?.type?.toLowerCase())) {
             // tempArray.push(lister?.binaryURL)
             if (lister[i]?.type?.toLowerCase() === "video") {
@@ -110,7 +113,7 @@ function App() {
 
 
 
-           
+            
             console.log(tempArray);
           }}
           if (i === response?.data?.list.length - 1) {
@@ -125,7 +128,7 @@ function App() {
 
       if (response?.data?.links?.next) {
         const parsed = queryString.parse(response?.data?.links?.next);
-       
+        
       //onSubmitMain(id,parsed.count,parsed.startIndex, values);
       }
     });
@@ -144,8 +147,8 @@ function App() {
             id: "https://thehub.spglobal.com/community/people-portal",
             from: 1,
             to: 20,
-            fromDate:'',
-            toDate:'',
+            fromDate:'2010-01-01',
+            toDate:currentDate.toISOString().split('T')[0],
             checked: ["document", "file", "post", "question", "idea", "discussion"],
           }}
           validate={(values) => {
@@ -179,7 +182,7 @@ function App() {
             setAlldata([]);
             setLoader("verifying  URL....");
             console.log(values)
-           
+            
             axios({
               url: `https://jivetestingapi.herokuapp.com/getspaceid/?url=${values.id}`,
              
@@ -220,11 +223,11 @@ function App() {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.id}
-               
+                
                 />
                 {errors.id && touched.id && errors.id}
               </div>
-         
+          
 
               <div
                 role="group"
@@ -252,7 +255,7 @@ function App() {
                   <Field type="checkbox" name="checked" value="post" />
                   Blogs
                 </label>
-               
+                
                 <label>
                   <Field type="checkbox" name="checked" value="discussion" />
                   Discussions & Questions
@@ -265,8 +268,8 @@ function App() {
               </div>
               <div className="options">
               <label>
-                 
-                  Filder data by Date
+                  
+                  Filter data by Date
                 </label>
                 <br />
                 From: &nbsp; &nbsp;
@@ -430,7 +433,7 @@ function App() {
 
         <Modal.Body>
           <h4 className="red">Mandatory settings</h4>
-         
+          
           <p>
             By default , Broswer open pdf file in new tab instead of download,
             We have to change Browser settings to download pdf. follow below
