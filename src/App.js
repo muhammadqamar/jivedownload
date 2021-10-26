@@ -129,7 +129,7 @@ function App() {
       if (response?.data?.links?.next) {
         const parsed = queryString.parse(response?.data?.links?.next);
         
-      //onSubmitMain(id,parsed.count,parsed.startIndex, values);
+      onSubmitMain(id,parsed.count,parsed.startIndex, values);
       }
     });
   };
@@ -181,18 +181,19 @@ function App() {
             setNext(false);
             setAlldata([]);
             setLoader("verifying  URL....");
-            console.log(values)
+        
             
             axios({
-              url: `https://jivetestingapi.herokuapp.com/getspaceid/?url=${values.id}`,
+              url: `https://3ypcsp05df.execute-api.us-east-1.amazonaws.com/test/url?url=${values.id}/api/v3`,
              
             })
               .then((spaceId) => {
-                if (spaceId.data?.placeID) {
-                  setSpaceId(spaceId.data?.placeID);
+                const idSpace = JSON.parse(spaceId.data)
+                if (idSpace?.placeID) {
+                  setSpaceId(idSpace?.placeID);
                   setLoader("your download will start soon, please wait....");
                   onSubmitMain(
-                    spaceId.data?.placeID,25,0,
+                    idSpace?.placeID,25,0,
                     values
                   );
                 } else {
