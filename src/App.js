@@ -184,7 +184,7 @@ function App() {
         
             
             axios({
-              url: `https://3ypcsp05df.execute-api.us-east-1.amazonaws.com/test/url?url=${values.id}/api/v3`,
+              url: `https://3ypcsp05df.execute-api.us-east-1.amazonaws.com/test/url?url=${values.id.replace('thehub.spglobal.com', 'spglobal.jiveon.com')}/api/v3`,
              
             })
               .then((spaceId) => {
